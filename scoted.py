@@ -1,4 +1,5 @@
 
+import numpy
 
 class SCoTED(object):
 
@@ -8,7 +9,7 @@ class SCoTED(object):
     def generate_heating_load_curve(self):
         pass
 
-    def generate_dhw(self)
+    def generate_dhw(self):
         pass
 
     def gernerate_energy_consumption_curve(self):
