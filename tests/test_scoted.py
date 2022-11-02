@@ -3,6 +3,7 @@ from SCoTED.weather import Weather
 from matplotlib import pyplot as plt
 import unittest
 from pathlib import Path
+import numpy as np
 
 class TestWeatherParser(unittest.TestCase):
     def setUp(self):
@@ -16,12 +17,22 @@ class TestWeatherParser(unittest.TestCase):
         weather = wp.parse("dwd_dat")
 
         self.sc.weather = weather
-        self.sc.heat_load_12831 = 1200
-        self.sc.t_standard_12831 = -10.5
-        self.sc.t_heating_limit = 15
-        timestamps, heat_load = self.sc.generate_heating_load_curve()
 
-        plt.plot(timestamps, heat_load)
+        timestamps, heat_load = self.sc.generate_heating_load_curve(heat_load_12831 = 1200, t_standard_12831 = -10.5, t_heating_limit = 15)
+
+        timestamps2, heat_load2 = self.sc.generate_heating_load_curve(heat_load_12831=1200, t_standard_12831=-10.5, t_heating_limit=18)
+
+        heat_load_sort = -np.sort(-heat_load)
+        heat_load2_sort = -np.sort(-heat_load2)
+
+        fig, (ax1, ax2) = plt.subplots(1,2)
+
+        ax1.plot(timestamps, heat_load, '.', markersize = 0.5)
+        ax1.plot(timestamps2, heat_load2, '.', markersize = 0.5 )
+
+        ax2.plot(timestamps, heat_load_sort)
+        ax2.plot(timestamps2, heat_load2_sort)
+
         plt.show()
 
 
