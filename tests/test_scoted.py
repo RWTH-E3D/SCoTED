@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 import numpy as np
 
+
 class TestWeatherParser(unittest.TestCase):
     def setUp(self):
         self.dwd_dat_path = Path.cwd() / "testdata" / "TRY2015_37585002676500_Jahr.dat"
@@ -25,7 +26,13 @@ class TestWeatherParser(unittest.TestCase):
         heat_load_sort = -np.sort(-heat_load)
         heat_load2_sort = -np.sort(-heat_load2)
 
+        print(heat_load_sort)
+
         fig, (ax1, ax2) = plt.subplots(1,2)
+
+        #dif = heat_load_sort - heat_load2_sort
+
+        #ax1.plot(timestamps,dif)
 
         ax1.plot(timestamps, heat_load, '.', markersize = 0.5)
         ax1.plot(timestamps2, heat_load2, '.', markersize = 0.5 )
