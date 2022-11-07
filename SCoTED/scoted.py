@@ -52,6 +52,12 @@ class SCoTED(object):
         return weather[:, 0], heating_load_curve
 
     def generate_dhw_curve(self):
+        """test
+
+        Returns
+        -------
+
+        """
         pass
 
     def gernerate_heating_consumption_curve(self):
