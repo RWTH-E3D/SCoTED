@@ -31,11 +31,11 @@ class SCoTED(object):
 
         Parameters
         ----------
-        heat_load_12831: numeric
+        heat_load_12831 : numeric
             Standard heating load according to DIN EN 12831
-        t_standard_12831: numeric
+        t_standard_12831 : numeric
             standard temperature according to DIN EN 12831
-        t_heating_limit: numeric
+        t_heating_limit : numeric
             Heating limit temperature
         Returns
         -------
