@@ -1,4 +1,4 @@
-
+import numpy
 import numpy as np
 import pandas as pd
 
@@ -22,7 +22,7 @@ class SCoTED(object):
             except:
                 raise ValueError("Weather has to be in a panda dataframe!")
 
-        self._weather = weather
+        self._weather = weather.to_numpy()
 
     def generate_heating_load_curve(self, heat_load_12831, t_standard_12831, t_heating_limit):
         """This function calculates the annual heating load curve from ambient temperature. For this purpose, it

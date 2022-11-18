@@ -11,6 +11,19 @@ class TestWeatherParser(unittest.TestCase):
         self.dwd_dat_path = Path.cwd() / "testdata" / "TRY2015_37585002676500_Jahr.dat"
         self.sc = SCoTED()
 
+    def test_curve_generator(self):
+
+        temperature = np.array([1,2,3,4,4])
+
+        point1 = np.array([800, -2])
+        point2  = np.array([0, 18])
+
+
+        result = np.array([680, 640, 600, 560, 560])
+
+        self.assertEqual(self.sc._curve_generator(point1, point2, temperature).tolist(), result.tolist())
+
+
 
     def test_weather(self):
 
@@ -19,27 +32,61 @@ class TestWeatherParser(unittest.TestCase):
 
         self.sc.weather = weather
 
-        timestamps, heat_load = self.sc.generate_heating_load_curve(heat_load_12831 = 1200, t_standard_12831 = -10.5, t_heating_limit = 15)
+        with open(Path.cwd() / "testdata" / "teaser result.npy", "r") as f:
+            teaser_data = np.loadtxt(f)
+            teaser_heat_load = teaser_data[:8760, 1]
 
-        timestamps2, heat_load2 = self.sc.generate_heating_load_curve(heat_load_12831=1200, t_standard_12831=-10.5, t_heating_limit=18)
 
-        heat_load_sort = -np.sort(-heat_load)
-        heat_load2_sort = -np.sort(-heat_load2)
+        timestamps, heat_load1 = self.sc.generate_heating_load_curve(heat_load_12831 = 6200, t_standard_12831 = -10.2, t_heating_limit = 15)
+        timestamps, heat_load2 = self.sc.generate_heating_load_curve(heat_load_12831=6200, t_standard_12831=-10.2,
+                                                                     t_heating_limit=11)
 
-        print(heat_load_sort)
+
+
+        heat_load_sort1 = -np.sort(-heat_load1)
+        heat_load_sort2 = -np.sort(-heat_load2)
+        teaser_heat_load_sort = -np.sort(-teaser_heat_load)
+
+
 
         fig, (ax1, ax2) = plt.subplots(1,2)
 
-        #dif = heat_load_sort - heat_load2_sort
 
         #ax1.plot(timestamps,dif)
+        ax1.set_ylabel("frequency (-)")
+        ax1.set_xlabel("difference (W)")
 
-        ax1.plot(timestamps, heat_load, '.', markersize = 0.5)
-        ax1.plot(timestamps2, heat_load2, '.', markersize = 0.5 )
+        ax2.set_ylabel("frequency (-)")
+        ax2.set_xlabel("difference (W)")
 
-        ax2.plot(timestamps, heat_load_sort)
-        ax2.plot(timestamps2, heat_load2_sort)
+        ax2.set_xlim([-1000, 1000])
+        ax2.set_ylim([0, 800])
 
+        ax1.set_xlim([-1000, 1000])
+        ax1.set_ylim([0, 800])
+
+        hours = np.arange(0, 8760, 1, dtype=int)
+
+
+        dif1= heat_load_sort1 - teaser_heat_load_sort
+        dif2 = heat_load_sort2 - teaser_heat_load_sort
+
+
+
+
+        #ax1.plot(timestamps, heat_load, label = "SCoTED", color="#407FB7")
+        #ax1.plot(timestamps, teaser_heat_load, label = "TEASER+", color="#D85C41")
+
+        #ax1.plot(hours, heat_load_sort, label = "SCoTED", color="#00549F")
+        #ax1.plot(hours, teaser_heat_load_sort, label = "TEASER+", color="#D85C41")
+
+        #ax2.plot(hours, dif, label="TEASER+ minus SCoTED", color="#8DC060")
+        ax1.hist(x=dif2[dif2 != 0], bins=np.arange(-1000, 1000, 20, dtype=int), color="#8DC060")
+        ax2.hist(x=dif1[dif1!=0], bins=np.arange(-1000, 1000, 20, dtype=int), color="#8DC060")
+
+
+        ax1.legend()
+        ax2.legend()
         plt.show()
 
 
