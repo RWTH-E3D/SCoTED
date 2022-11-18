@@ -51,13 +51,36 @@ class SCoTED(object):
 
         return weather[:, 0], heating_load_curve
 
-    def generate_dhw_curve(self):
-        """test
+    def _curve_generator(self, point1, point2, temperature_curve):
+        """These functions interpolate for each value of a temperature curve the heating load from two data points
+        (point1, point2)
+
+        Parameters
+        ----------
+        point1 : numpy.array
+            First data point for linear interpolation consisting of a heat load and a coresponding temperature.
+            The format is [heat_load, temperature].
+        point2 : numpy.array
+            Second data point for linear interpolation consisting of a heat load and a coresponding temperature.
+            The format is [heat_load, temperature].
 
         Returns
         -------
+        curve : numpy.array
+            generated curve
 
         """
+
+        if not numpy.array_equal(point1, point2):
+            curve = point1[0] + ((point2[0]-point1[0])/(point2[1]-point1[1])) * (temperature_curve-point1[1])
+        else:
+            raise ValueError("Linear interpolation requires 2 different points, but two identical were given!")
+
+        return curve
+
+
+    def generate_dhw_curve(self, test):
+
         pass
 
     def gernerate_heating_consumption_curve(self):
