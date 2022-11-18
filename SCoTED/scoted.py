@@ -113,7 +113,7 @@ class SCoTED(object):
         reference_point2 = np.array([0, t_heating_limit])
 
         heating_load_curve = self._curve_generator(reference_point1, reference_point2, self.weather[:, 1])
-        heating_load_curve = heating_load_curve.clip(min=0)
+        heating_load_curve.clip(min=0,  out=heating_load_curve)
 
         return self.weather[:, 0], heating_load_curve
 
