@@ -51,7 +51,7 @@ class SCoTED(object):
 
         return self.weather[:, 0], heating_load_curve
 
-    def _curve_generator(self, point1, point2):
+    def _curve_generator(self, point1, point2, temperature=None):
         """These functions interpolate for each value of a temperature curve the heating load from two data points
         (point1, point2)
 
@@ -70,9 +70,13 @@ class SCoTED(object):
             Generated curve
 
         """
-
+        if temperature is None:
+            if self.weather is None:
+                raise ValueError("Please specify a weather dataset in the object or assign it to the function ")
+            else:
+                temperature = self.weather[:, 1]
         if not numpy.array_equal(point1, point2):
-            curve = point1[0] + ((point2[0] - point1[0]) / (point2[1] - point1[1])) * (temperature_curve - point1[1])
+            curve = point1[0] + ((point2[0] - point1[0]) / (point2[1] - point1[1])) * (temperature - point1[1])
         else:
             raise ValueError("Linear interpolation requires 2 different points, but two identical were given!")
 
