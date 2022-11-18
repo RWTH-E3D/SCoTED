@@ -39,7 +39,7 @@ class TestWeatherParser(unittest.TestCase):
         heat_load_sort1 = -np.sort(-heat_load1)
         heat_load_sort2 = -np.sort(-heat_load2)
         teaser_heat_load_sort = -np.sort(-teaser_heat_load)
-
+        """
         fig, (ax1, ax2) = plt.subplots(1, 2)
 
         # ax1.plot(timestamps,dif)
@@ -73,6 +73,7 @@ class TestWeatherParser(unittest.TestCase):
         ax1.legend()
         ax2.legend()
         plt.show()
+        """
 
 
 if __name__ == "__main__":

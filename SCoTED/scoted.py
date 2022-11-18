@@ -105,11 +105,17 @@ class SCoTED(object):
         """
 
         g = (t_heating_limit - self.weather[:, 1])
-        g = g.clip(min=0)
-        b_vf = g / (t_heating_limit - t_standard_12831)
+        G = np.sum(g[g > 0])
+        b_vf = G / (t_heating_limit - t_standard_12831)
         heating_load = heating_consumption / b_vf
 
-        return generate_heating_load_curve(heating_load, t_standard_12831, t_heating_limit)
+        reference_point1 = np.array([heating_load, t_standard_12831])
+        reference_point2 = np.array([0, t_heating_limit])
+
+        heating_load_curve = self._curve_generator(reference_point1, reference_point2, self.weather[:, 1])
+        heating_load_curve = heating_load_curve.clip(min=0)
+
+        return self.weather[:, 0], heating_load_curve
 
     def gernerate_energy_consumption_curve(self):
         pass
