@@ -2,12 +2,11 @@ import numpy
 import numpy as np
 import pandas as pd
 
+
 class SCoTED(object):
 
     def __init__(self):
         self._weather = None
-
-
 
     @property
     def weather(self):
@@ -19,7 +18,7 @@ class SCoTED(object):
         if not isinstance(weather, pd.DataFrame):
             try:
                 weather = DataFrame(weather)
-            except:
+            except ValueError:
                 raise ValueError("Weather has to be in a panda dataframe!")
 
         self._weather = weather.to_numpy()
@@ -34,12 +33,12 @@ class SCoTED(object):
         heat_load_12831 : numeric
             Standard heating load according to DIN EN 12831
         t_standard_12831 : numeric
-            standard temperature according to DIN EN 12831
+            Standard temperature according to DIN EN 12831
         t_heating_limit : numeric
             Heating limit temperature
         Returns
         -------
-        heating_load_curve : np.array
+        heating_load_curve : numpy.array
             Heating load curve in the exact resolution as the weather data stored in the object.
 
         """
@@ -50,9 +49,10 @@ class SCoTED(object):
         heating_load_curve = self._curve_generator(reference_point1, reference_point2, self.weather[:, 1])
         heating_load_curve = heating_load_curve.clip(min=0)
 
-        return self. weather[:, 0], heating_load_curve
+        return self.weather[:, 0], heating_load_curve
 
-    def _curve_generator(self, point1, point2, temperature_curve):
+    @staticmethod
+    def _curve_generator(point1, point2, temperature_curve):
         """These functions interpolate for each value of a temperature curve the heating load from two data points
         (point1, point2)
 
@@ -68,24 +68,45 @@ class SCoTED(object):
         Returns
         -------
         curve : numpy.array
-            generated curve
+            Generated curve
 
         """
 
         if not numpy.array_equal(point1, point2):
-            curve = point1[0] + ((point2[0]-point1[0])/(point2[1]-point1[1])) * (temperature_curve-point1[1])
+            curve = point1[0] + ((point2[0] - point1[0]) / (point2[1] - point1[1])) * (temperature_curve - point1[1])
         else:
             raise ValueError("Linear interpolation requires 2 different points, but two identical were given!")
 
         return curve
 
-
     def generate_dhw_curve(self, test):
 
         pass
 
-    def gernerate_heating_consumption_curve(self):
-        pass
+    def gernerate_heating_consumption_curve(self, heating_consumption, t_standard_12831, t_heating_limit):
+        """This function calculates the annual heating energy consumption curve from the ambient temperature.
+
+
+        Parameters
+        ----------
+        heating_consumption : numeric
+            Annual energy consumption for heating the building
+        t_standard_12831 : numeric
+            Standard heating load according to DIN EN 12831
+        t_heating_limit : numeric
+            Standard temperature according to DIN EN 12831
+        Returns
+        -------
+        heating_load_curve : numpy.array
+            Generated curve
+        """
+
+        g = (t_heating_limit - self.weather[:, 1])
+        g = g.clip(min=0)
+        b_vf = g / (t_heating_limit - t_standard_12831)
+        heating_load = heating_consumption / b_vf
+
+        return generate_heating_load_curve(heating_load, t_standard_12831, t_heating_limit)
 
     def gernerate_energy_consumption_curve(self):
         pass
