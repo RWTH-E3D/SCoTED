@@ -46,13 +46,12 @@ class SCoTED(object):
         reference_point1 = np.array([heat_load_12831, t_standard_12831])
         reference_point2 = np.array([0, t_heating_limit])
 
-        heating_load_curve = self._curve_generator(reference_point1, reference_point2, self.weather[:, 1])
+        heating_load_curve = self._curve_generator(reference_point1, reference_point2)
         heating_load_curve.clip(min=0, out=heating_load_curve)
 
         return self.weather[:, 0], heating_load_curve
 
-    @staticmethod
-    def _curve_generator(point1, point2, temperature_curve):
+    def _curve_generator(self, point1, point2):
         """These functions interpolate for each value of a temperature curve the heating load from two data points
         (point1, point2)
 
@@ -98,7 +97,7 @@ class SCoTED(object):
         Returns
         -------
         heating_load_curve : numpy.array
-            Generated curve
+            Heating load curve in the exact resolution as the weather data stored in the object.
         """
 
         g = (t_heating_limit - self.weather[:, 1])
