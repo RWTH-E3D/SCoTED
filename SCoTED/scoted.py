@@ -17,9 +17,9 @@ class SCoTED(object):
 
         if not isinstance(weather, pd.DataFrame):
             try:
-                weather = DataFrame(weather)
-            except ValueError:
-                raise ValueError("Weather has to be in a panda dataframe!")
+                weather = pd.DataFrame(weather)
+            except TypeError:
+                raise TypeError("Weather has to be in a panda dataframe or a compatible format!")
 
         self._weather = weather.to_numpy()
 
