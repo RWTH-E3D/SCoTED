@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 
-class TestWeatherParser(unittest.TestCase):
+class TestScoted(unittest.TestCase):
     def setUp(self):
         self.dwd_dat_path = Path.cwd() / "testdata" / "TRY2015_37585002676500_Jahr.dat"
         self.sc = SCoTED()
