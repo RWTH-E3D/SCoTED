@@ -141,10 +141,13 @@ class SCoTED(object):
 
         return np.tile(dhw_profile, 365)
 
-    def generate_cooling_load_curve(self, cooling_load_2078, t_standard, t_cooling_limit):
+    def generate_cooling_load_curve(self, cooling_load_2078, t_standard, t_cooling_limit, adjustment=False):
         """This function calculates the annual cooling load curve from ambient temperature. For this purpose, it
         interpolates linearly between the standard cooling load and its standard temperature and the cooling limit
         temperature and 0W.
+        The option to reduce the loads which exceed the stated cooling_load_2078 (in case the maximum
+        temperature from the weather data set is greater than t_standard) divides each load value by
+        the calculated adjustment factor.
 
         Parameters
         ----------
@@ -154,6 +157,9 @@ class SCoTED(object):
             Standard temperature belonging to the cooling load [°C]
         t_cooling_limit : numeric
             cooling limit temperature [°C]
+        adjustment : boolean
+            if true, the adjustment factor to reduce the maximum loads to the given cooling_load_2078
+            is used in case the maximum temperature from the weather data set is greater than t_standard
         Returns
         -------
         cooling_load_curve : numpy array
@@ -166,6 +172,22 @@ class SCoTED(object):
 
         cooling_load_curve = self._curve_generator(reference_point1, reference_point2, temperature=None)
         cooling_load_curve.clip(min=0, out=cooling_load_curve)
+
+        max_temp = self.weather[:, 1].max()
+        if adjustment is True and max_temp > t_standard:
+            print("Adjustment is made"
+                  "\nCaution: Cooling load is reduced")
+            adjustment_factor = (max_temp - t_cooling_limit) / (t_standard - t_cooling_limit)
+            cooling_load_curve = cooling_load_curve / adjustment_factor
+        elif adjustment is True and max_temp < t_standard:
+            print("No adjustment required: Maximum temperature from weather data set < t_standard")
+        elif adjustment is False and max_temp > t_standard:
+            print("Adjustment is set to False"
+                  "\nMaximum temperature from weather data set is greater than the standard temperature belonging "
+                  "to the given cooling load"
+                  "\nCooling loads greater than those given in the function call may occur")
+        else:
+            print("No adjustment is made")
 
         return self.weather[:, 0], cooling_load_curve
 
