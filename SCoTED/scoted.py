@@ -175,7 +175,7 @@ class SCoTED(object):
 
         max_temp = self.weather[:, 1].max()
         if adjustment is True and max_temp > t_standard:
-            print("Adjustment is made"
+            print("Maximum temperature from weather data set > t_standard: Adjustment is made"
                   "\nCaution: Cooling load is reduced")
             adjustment_factor = (max_temp - t_cooling_limit) / (t_standard - t_cooling_limit)
             cooling_load_curve = cooling_load_curve / adjustment_factor
@@ -210,16 +210,72 @@ class SCoTED(object):
         else:
             temperature = self.weather[:, 1]
 
-        cooling_hours = (temperature - t_cooling_limit) * 10  # for 0.1 degree C steps
+        cooling_hours = (temperature - t_cooling_limit) * 10
         sum_cooling_hours = np.sum(cooling_hours[cooling_hours > 0])
-        b = cooling_consumption / sum_cooling_hours  # [W/0.1°C]
+        b = cooling_consumption / sum_cooling_hours
 
         cooling_load_curve = np.zeros(8760)
         for i in range(8760):
             if cooling_hours[i] >= 0:
                 cooling_load_curve[i] = b * 10 * (temperature[i] - t_cooling_limit)
-        # cooling_load_curve = b * 10 * (temperature - t_cooling_limit)
+
         cooling_load_curve.clip(min=0, out=cooling_load_curve)
+
+        return self.weather[:, 1], cooling_load_curve
+
+    def generate_cooling_curve(self, cooling_load_2078, cooling_consumption, t_standard, t_cooling_limit):
+        """This function calculates the annual cooling energy consumption curve from the ambient temperature.
+        A definition by cases is made using the ratio of the gradients of the respective methods (cooling_load;
+        cooling_consumption).
+        For the case of a higher gradient with the cooling_load method, a generalized load value calculated
+        from the difference between both methods is added to the cooling_load_curve in the hours in which cooling
+        is used.
+
+        Parameters
+        ----------
+        cooling_load_2078 : numeric
+            Standard cooling load according to VDI 2078 [W]
+        cooling_consumption : numeric
+            Annual energy consumption for heating the building [Wh]
+        t_standard : numeric
+            Standard temperature belonging to the cooling load [°C]
+        t_cooling_limit : numeric
+            Cooling limit temperature [°C]
+        Returns
+        -------
+        cooling_load_curve : numpy array
+            Cooling load curve in the exact resolution as the weather data stored in the object. [W]
+        """
+        if self.weather is None:
+            raise ValueError("Please specify a weather dataset in the object")
+        else:
+            temperature = self.weather[:, 1]
+
+        cooling_load_reference_point1 = np.array([cooling_load_2078, t_standard])
+        cooling_load_reference_point2 = np.array([0, t_cooling_limit])
+        cooling_load_gradient = (cooling_load_reference_point1[0] - cooling_load_reference_point2[0]) \
+                                / (cooling_load_reference_point1[1] - cooling_load_reference_point2[1])
+        cooling_load_curve = self._curve_generator(cooling_load_reference_point1, cooling_load_reference_point2,
+                                                   temperature=None)
+        cooling_load_curve.clip(min=0, out=cooling_load_curve)
+
+        cooling_hours = (temperature - t_cooling_limit) * 10
+        sum_cooling_hours = np.sum(cooling_hours[cooling_hours > 0])
+        cooling_consumption_gradient = cooling_consumption / sum_cooling_hours * 10
+
+        gradient_ratio = cooling_consumption_gradient / cooling_load_gradient
+
+        if gradient_ratio > 1:
+            amount_cooling_hours = (temperature >= t_cooling_limit).astype(int).sum()  # [h]
+            distributable_load = cooling_consumption - cooling_load_gradient / 10 * sum_cooling_hours  # [Wh]
+            added_load = distributable_load / amount_cooling_hours  # [W]
+            cooling_load_curve[cooling_load_curve != 0] += added_load
+        elif gradient_ratio < 1:
+            cooling_load_curve = np.zeros(8760)
+            for i in range(8760):
+                if cooling_hours[i] >= 0:
+                    cooling_load_curve[i] = cooling_consumption_gradient * (temperature[i] - t_cooling_limit)
+            cooling_load_curve.clip(min=0, out=cooling_load_curve)
 
         return self.weather[:, 1], cooling_load_curve
 
