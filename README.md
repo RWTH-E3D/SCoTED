@@ -7,7 +7,7 @@ SCoTED is developed by members of the "Institute of Energy Efficiency and Sustai
 
 
 ## Installation
-SCoTED can be used by cloning or downloading the whole disteLCA package from the GIT Repository.
+SCoTED can be used by cloning or downloading the whole SCoTED package from the GIT Repository.
 
 ## How to contribute to the development of SCoTED
 You are invited to contribute to the development of SCoTED. You may report any issues by sending us an email to cuypers@e3d.rwth-aachen.de.
