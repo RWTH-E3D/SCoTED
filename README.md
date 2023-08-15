@@ -3,7 +3,7 @@
 <!---[![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)-->
 
 ## Description
-SCoTED is developed by members of the "Institute of Energy Efficiency and Sustainable Building (e3D), RWTH Aachen University" using Python 3.9. It is based on [Koschwitz 2016](https://www.researchgate.net/publication/311304412_Softwaregestutzte_Warmebedarfsermittlung_bei_Informations-_und_Ressourcenknappheit) and was further developed in the research project [Getis](https://www.enargus.de/pub/bscw.cgi/?op=enargus.eps2&q=GeTis&v=10&id=365838) and [GeoWaermeWende](https://www.enargus.de/pub/bscw.cgi/?op=enargus.eps2&q=GeoWaermeWende&v=10&id=10567045).
+SCoTED is developed by members of the "Institute of Energy Efficiency and Sustainable Building (e3D), RWTH Aachen University" using Python 3.9. It is based on [Koschwitz 2016](https://www.researchgate.net/publication/311304412_Softwaregestutzte_Warmebedarfsermittlung_bei_Informations-_und_Ressourcenknappheit) and was further developed in the research project [GeTIS](https://www.enargus.de/pub/bscw.cgi/?op=enargus.eps2&q=GeTis&v=10&id=365838) and [GeoWaermeWende](https://www.enargus.de/pub/bscw.cgi/?op=enargus.eps2&q=GeoWaermeWende&v=10&id=10567045). It provides a high-performance, easy-to-use, analytical approach to generate heating load curves based on annual consumption or standard heating loads.
 
 
 ## Installation
